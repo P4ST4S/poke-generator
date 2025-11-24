@@ -12,9 +12,9 @@ export const pokemonFormSchema = z.object({
   pokemonNameFr: z.string().optional(),
   nickname: z.string().max(100).optional(),
   gender: z.enum(["male", "female", "genderless"], {
-    required_error: "Gender is required",
+    message: "Gender is required",
   }),
-  isShiny: z.boolean().default(false),
+  isShiny: z.boolean(),
   moves: z.array(moveSchema).length(4, "Exactly 4 moves are required"),
   creatorName: z.string().min(1, "Creator name is required").max(100),
   spriteUrl: z.string().url().optional(),

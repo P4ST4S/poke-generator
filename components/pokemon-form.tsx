@@ -43,10 +43,10 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
       isShiny: false,
       gender: "male",
       moves: [
-        { name: "", type: "learned" },
-        { name: "", type: "learned" },
-        { name: "", type: "learned" },
-        { name: "", type: "learned" },
+        { name: "", type: "learned", nameFr: "" },
+        { name: "", type: "learned", nameFr: "" },
+        { name: "", type: "learned", nameFr: "" },
+        { name: "", type: "learned", nameFr: "" },
       ],
     },
   });
