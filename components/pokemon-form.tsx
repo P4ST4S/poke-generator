@@ -217,7 +217,10 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
 
       {/* Capacités */}
       <div className="space-y-4">
-        <Label>Capacités (4 requises)</Label>
+        <div className="flex items-center justify-between">
+          <Label>Capacités (4 requises)</Label>
+          <span className="text-xs text-gray-500 italic">Astuce: Choisissez "Aléatoire" pour une capacité surprise</span>
+        </div>
         {[0, 1, 2, 3].map((index) => {
           // Créer une liste combinée avec démarcation
           const learnedMoves = selectedPokemon?.moves.map((move) => ({
