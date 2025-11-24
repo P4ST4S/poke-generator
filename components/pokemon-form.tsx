@@ -117,27 +117,32 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto">
       {/* Navigation */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Générateur Egglocke</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold text-white drop-shadow-[3px_3px_0px_rgba(59,163,212,1)]">
+          Générateur Egglocke
+        </h1>
         <Link href="/created">
-          <Button variant="outline">
-            Voir les Pokémon créés →
+          <Button
+            variant="outline"
+            className="bg-pokemon-blue text-white border-2 border-pokemon-dark-blue hover:bg-pokemon-dark-blue font-bold text-xs"
+          >
+            Voir Pokémon →
           </Button>
         </Link>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-6 bg-white rounded-lg shadow-lg">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-6 bg-white rounded-lg shadow-[8px_8px_0px_0px_rgba(59,76,202,0.3)] border-4 border-pokemon-blue">
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
+        <div className="bg-pokemon-red text-white px-4 py-3 rounded border-2 border-red-800 text-xs font-bold">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">
+        <div className="bg-green-500 text-white px-4 py-3 rounded border-2 border-green-700 text-xs font-bold">
           Pokémon créé avec succès !
         </div>
       )}
@@ -248,7 +253,7 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
               <div className="flex gap-2">
                 <Select
                   {...register(`moves.${index}.type` as const)}
-                  className="w-32"
+                  className="w-40"
                   disabled={!selectedPokemon}
                   onChange={(e) => {
                     const newType = e.target.value as "learned" | "random";
@@ -350,8 +355,12 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
       </div>
 
       {/* Submit */}
-      <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? "Création en cours..." : "Créer le Pokémon"}
+      <Button
+        type="submit"
+        disabled={isPending}
+        className="w-full bg-pokemon-red hover:bg-red-700 text-white font-bold py-3 text-sm border-4 border-red-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] active:shadow-none active:translate-x-1 active:translate-y-1"
+      >
+        {isPending ? "Création..." : "Créer le Pokémon"}
       </Button>
     </form>
     </div>

@@ -1,26 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --pokemon-red: #EE1515;
+  --pokemon-yellow: #FFCB05;
+  --pokemon-blue: #62c6e9;
+  --pokemon-dark-blue: #3ba3d4;
+  --pokemon-light-blue: #89d6f0;
+  --background: #FFFAEB;
+  --foreground: #2C2C2C;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-pixel: var(--font-pixel);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Couleurs Pokémon */
+  --color-pokemon-red: var(--pokemon-red);
+  --color-pokemon-yellow: var(--pokemon-yellow);
+  --color-pokemon-blue: var(--pokemon-blue);
+  --color-pokemon-dark-blue: var(--pokemon-dark-blue);
+  --color-pokemon-light-blue: var(--pokemon-light-blue);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-pixel), monospace;
+  line-height: 1.6;
 }
