@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import type { CreatedPokemon } from "@/lib/db/schema";
 
 interface PokemonCardProps {
@@ -5,6 +8,7 @@ interface PokemonCardProps {
 }
 
 export function PokemonCard({ pokemon }: PokemonCardProps) {
+  const [isCreatorRevealed, setIsCreatorRevealed] = useState(false);
   const genderSymbol = {
     male: "♂",
     female: "♀",
@@ -78,7 +82,20 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
 
       {/* Footer */}
       <div className="border-t pt-4 flex items-center justify-between text-sm text-gray-600">
-        <span>Par: <span className="font-medium">{pokemon.creatorName}</span></span>
+        <div className="flex items-center gap-2">
+          <span>Par:</span>
+          {isCreatorRevealed ? (
+            <span className="font-medium">{pokemon.creatorName}</span>
+          ) : (
+            <button
+              onClick={() => setIsCreatorRevealed(true)}
+              className="px-3 py-1 bg-gray-800 text-gray-800 rounded cursor-pointer hover:bg-gray-700 transition-colors select-none"
+              title="Cliquer pour révéler"
+            >
+              ████████
+            </button>
+          )}
+        </div>
         {pokemon.createdAt && (
           <span className="text-xs">
             {new Date(pokemon.createdAt).toLocaleDateString("fr-FR", {

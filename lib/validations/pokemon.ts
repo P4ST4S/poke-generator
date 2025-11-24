@@ -10,7 +10,7 @@ export const pokemonFormSchema = z.object({
   pokemonId: z.number().int().min(1).max(493, "Pokemon ID must be between 1 and 493"),
   pokemonName: z.string().min(1, "Pokemon name is required"),
   pokemonNameFr: z.string().optional(),
-  nickname: z.string().max(100).optional(),
+  nickname: z.string().min(1, "Le surnom est requis").max(100),
   gender: z.enum(["male", "female", "genderless"], {
     message: "Gender is required",
   }),

@@ -149,3 +149,35 @@ export const getCachedPokemonDetails = unstable_cache(
     tags: ["pokemon-details"],
   }
 );
+
+// Cache toutes les capacités disponibles pour 24h
+export const getCachedAllMoves = unstable_cache(
+  async (): Promise<PokemonMove[]> => {
+    try {
+      // Récupère la liste de toutes les capacités (limit=1000 pour être sûr de tout avoir)
+      const response = await fetch("https://pokeapi.co/api/v2/move?limit=1000");
+      if (!response.ok) return [];
+      const data = await response.json();
+
+      // Récupère les noms français pour chaque capacité
+      const movesPromises = data.results.map(async (move: { name: string; url: string }) => {
+        const moveFr = await getFrenchMoveName(move.url);
+        return {
+          name: move.name,
+          nameFr: moveFr || move.name,
+          url: move.url,
+        };
+      });
+
+      const moves = await Promise.all(movesPromises);
+      return moves.sort((a, b) => a.nameFr.localeCompare(b.nameFr, "fr"));
+    } catch {
+      return [];
+    }
+  },
+  ["all-moves-fr"],
+  {
+    revalidate: 86400,
+    tags: ["all-moves"],
+  }
+);

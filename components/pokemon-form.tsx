@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 import type { PokemonListItem, PokemonMove } from "@/lib/api/pokeapi";
 
 interface PokemonFormProps {
@@ -27,6 +28,7 @@ interface SelectedPokemonData {
 export function PokemonForm({ pokemonList }: PokemonFormProps) {
   const [isPending, startTransition] = useTransition();
   const [selectedPokemon, setSelectedPokemon] = useState<SelectedPokemonData | null>(null);
+  const [allMoves, setAllMoves] = useState<PokemonMove[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
@@ -54,6 +56,14 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
   const watchedPokemonId = watch("pokemonId");
   const watchedIsShiny = watch("isShiny");
   const watchedMoves = watch("moves");
+
+  // Charge toutes les capacités au montage du composant
+  useEffect(() => {
+    fetch("/api/moves")
+      .then((res) => res.json())
+      .then((data) => setAllMoves(data))
+      .catch((err) => console.error("Error fetching all moves:", err));
+  }, []);
 
   // Charge les détails du Pokémon sélectionné avec les noms français
   const handlePokemonChange = async (pokemonId: number) => {
@@ -135,20 +145,19 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
       {/* Sélection du Pokémon */}
       <div className="space-y-2">
         <Label htmlFor="pokemonId">Pokémon</Label>
-        <Select
-          id="pokemonId"
-          {...register("pokemonId", {
-            valueAsNumber: true,
-            onChange: (e) => handlePokemonChange(Number(e.target.value)),
-          })}
-        >
-          <option value="">Sélectionnez un Pokémon</option>
-          {pokemonList.map((pokemon) => (
-            <option key={pokemon.id} value={pokemon.id}>
-              #{pokemon.id.toString().padStart(3, "0")} - {pokemon.nameFr}
-            </option>
-          ))}
-        </Select>
+        <Combobox
+          options={pokemonList.map((pokemon) => ({
+            value: pokemon.id.toString(),
+            label: `#${pokemon.id.toString().padStart(3, "0")} - ${pokemon.nameFr}`,
+          }))}
+          value={watchedPokemonId?.toString()}
+          onChange={(value) => {
+            const pokemonId = Number(value);
+            setValue("pokemonId", pokemonId);
+            handlePokemonChange(pokemonId);
+          }}
+          placeholder="Rechercher un Pokémon..."
+        />
         {errors.pokemonId && (
           <p className="text-sm text-red-600">{errors.pokemonId.message}</p>
         )}
@@ -169,7 +178,7 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
 
       {/* Surnom */}
       <div className="space-y-2">
-        <Label htmlFor="nickname">Surnom (Optionnel)</Label>
+        <Label htmlFor="nickname">Surnom</Label>
         <Input id="nickname" {...register("nickname")} placeholder="Entrez un surnom" />
         {errors.nickname && (
           <p className="text-sm text-red-600">{errors.nickname.message}</p>
@@ -223,27 +232,27 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
 
               {watchedMoves[index]?.type === "learned" && (
                 <>
-                  <Select
-                    {...register(`moves.${index}.name` as const, {
-                      onChange: (e) => {
-                        const selectedMove = selectedPokemon?.moves.find(
-                          (m) => m.name === e.target.value
-                        );
-                        if (selectedMove) {
-                          setValue(`moves.${index}.nameFr`, selectedMove.nameFr);
-                        }
-                      },
-                    })}
-                    className="flex-1"
+                  <Combobox
+                    options={
+                      selectedPokemon?.moves.map((move) => ({
+                        value: move.name,
+                        label: move.nameFr,
+                      })) || []
+                    }
+                    value={watchedMoves[index]?.name}
+                    onChange={(value) => {
+                      setValue(`moves.${index}.name`, value);
+                      const selectedMove = selectedPokemon?.moves.find(
+                        (m) => m.name === value
+                      );
+                      if (selectedMove) {
+                        setValue(`moves.${index}.nameFr`, selectedMove.nameFr);
+                      }
+                    }}
+                    placeholder="Rechercher une capacité..."
                     disabled={!selectedPokemon}
-                  >
-                    <option value="">Sélectionnez une capacité</option>
-                    {selectedPokemon?.moves.map((move) => (
-                      <option key={move.name} value={move.name}>
-                        {move.nameFr}
-                      </option>
-                    ))}
-                  </Select>
+                    className="flex-1"
+                  />
                   <input
                     type="hidden"
                     {...register(`moves.${index}.nameFr` as const)}
@@ -272,14 +281,20 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
 
               {watchedMoves[index]?.type === "custom" && (
                 <>
-                  <Input
-                    {...register(`moves.${index}.name` as const, {
-                      onChange: (e) => {
-                        // Pour les customs, on met le même nom en FR
-                        setValue(`moves.${index}.nameFr`, e.target.value);
-                      },
-                    })}
-                    placeholder="Entrez une capacité personnalisée"
+                  <Combobox
+                    options={allMoves.map((move) => ({
+                      value: move.name,
+                      label: move.nameFr,
+                    }))}
+                    value={watchedMoves[index]?.name}
+                    onChange={(value) => {
+                      setValue(`moves.${index}.name`, value);
+                      const selectedMove = allMoves.find((m) => m.name === value);
+                      if (selectedMove) {
+                        setValue(`moves.${index}.nameFr`, selectedMove.nameFr);
+                      }
+                    }}
+                    placeholder="Rechercher une capacité..."
                     className="flex-1"
                   />
                   <input
