@@ -68,9 +68,7 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
               className="text-sm px-3 py-1 bg-gray-100 rounded-md"
             >
               <span className="capitalize">
-                {move.type === "random"
-                  ? "🎲 Aléatoire"
-                  : (move.nameFr || move.name)}
+                {(move.nameFr || move.name)}
               </span>
             </div>
           ))}
@@ -86,9 +84,10 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
           ) : (
             <button
               onClick={() => setIsCreatorRevealed(true)}
-              className="px-3 py-1 bg-gray-800 text-gray-800 rounded cursor-pointer hover:bg-gray-700 transition-colors select-none"
+              className="px-3 py-1 bg-gray-800 text-white rounded cursor-pointer hover:bg-gray-700 transition-colors select-none"
               title="Cliquer pour révéler"
             >
+              🔒 Révéler
             </button>
           )}
         </div>
