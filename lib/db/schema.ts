@@ -11,7 +11,7 @@ export const createdPokemons = pgTable("created_pokemons", {
   moves: jsonb("moves").notNull().$type<Array<{
     name: string;
     nameFr?: string;
-    type: "learned" | "random" | "custom";
+    type: "learned" | "random";
   }>>(),
   creatorName: varchar("creator_name", { length: 100 }).notNull(),
   spriteUrl: varchar("sprite_url", { length: 255 }),

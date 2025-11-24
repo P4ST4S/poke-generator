@@ -72,9 +72,6 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
                   ? "🎲 Aléatoire"
                   : (move.nameFr || move.name)}
               </span>
-              {move.type === "custom" && (
-                <span className="text-xs text-gray-500 ml-1">(custom)</span>
-              )}
             </div>
           ))}
         </div>

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 interface ComboboxOption {
   value: string;
   label: string;
+  isSeparator?: boolean;
 }
 
 interface ComboboxProps {
@@ -47,13 +48,23 @@ export function Combobox({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Filtrer les options en fonction de la recherche
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filtrer les options en fonction de la recherche (garder les séparateurs si au moins une option avant ou après est visible)
+  const filteredOptions = options.filter((option, idx, arr) => {
+    if (option.isSeparator) {
+      // Garder le séparateur si au moins une option avant ou après correspond à la recherche
+      const hasMatchBefore = arr.slice(0, idx).some((opt) =>
+        !opt.isSeparator && opt.label.toLowerCase().includes(search.toLowerCase())
+      );
+      const hasMatchAfter = arr.slice(idx + 1).some((opt) =>
+        !opt.isSeparator && opt.label.toLowerCase().includes(search.toLowerCase())
+      );
+      return hasMatchBefore && hasMatchAfter;
+    }
+    return option.label.toLowerCase().includes(search.toLowerCase());
+  });
 
   // Trouver le label de la valeur sélectionnée
-  const selectedOption = options.find((opt) => opt.value === value);
+  const selectedOption = options.find((opt) => opt.value === value && !opt.isSeparator);
   const displayValue = selectedOption ? selectedOption.label : search;
 
   const handleSelect = (optionValue: string) => {
@@ -89,18 +100,27 @@ export function Combobox({
               Aucun résultat trouvé
             </div>
           ) : (
-            filteredOptions.map((option) => (
-              <div
-                key={option.value}
-                className={cn(
-                  "px-3 py-2 text-sm cursor-pointer hover:bg-blue-50",
-                  option.value === value && "bg-blue-100 font-medium"
-                )}
-                onClick={() => handleSelect(option.value)}
-              >
-                {option.label}
-              </div>
-            ))
+            filteredOptions.map((option) =>
+              option.isSeparator ? (
+                <div
+                  key={option.value}
+                  className="px-3 py-2 border-t-2 border-gray-300 text-xs text-gray-500 font-semibold uppercase tracking-wide"
+                >
+                  {option.label}
+                </div>
+              ) : (
+                <div
+                  key={option.value}
+                  className={cn(
+                    "px-3 py-2 text-sm cursor-pointer hover:bg-blue-50",
+                    option.value === value && "bg-blue-100 font-medium"
+                  )}
+                  onClick={() => handleSelect(option.value)}
+                >
+                  {option.label}
+                </div>
+              )
+            )
           )}
         </div>
       )}

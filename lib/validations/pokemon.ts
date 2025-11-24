@@ -3,7 +3,7 @@ import { z } from "zod";
 export const moveSchema = z.object({
   name: z.string().min(1, "Move name is required"),
   nameFr: z.string().optional(),
-  type: z.enum(["learned", "random", "custom"]),
+  type: z.enum(["learned", "random"]),
 });
 
 export const pokemonFormSchema = z.object({

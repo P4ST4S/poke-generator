@@ -218,99 +218,89 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
       {/* Capacités */}
       <div className="space-y-4">
         <Label>Capacités (4 requises)</Label>
-        {[0, 1, 2, 3].map((index) => (
-          <div key={index} className="space-y-2">
-            <div className="flex gap-2">
-              <Select
-                {...register(`moves.${index}.type` as const)}
-                className="w-32"
-              >
-                <option value="learned">Apprise</option>
-                <option value="random">Aléatoire</option>
-                <option value="custom">Custom</option>
-              </Select>
+        {[0, 1, 2, 3].map((index) => {
+          // Créer une liste combinée avec démarcation
+          const learnedMoves = selectedPokemon?.moves.map((move) => ({
+            value: move.name,
+            label: move.nameFr,
+          })) || [];
 
-              {watchedMoves[index]?.type === "learned" && (
-                <>
-                  <Combobox
-                    options={
-                      selectedPokemon?.moves.map((move) => ({
-                        value: move.name,
-                        label: move.nameFr,
-                      })) || []
-                    }
-                    value={watchedMoves[index]?.name}
-                    onChange={(value) => {
-                      setValue(`moves.${index}.name`, value);
-                      const selectedMove = selectedPokemon?.moves.find(
-                        (m) => m.name === value
-                      );
-                      if (selectedMove) {
-                        setValue(`moves.${index}.nameFr`, selectedMove.nameFr);
-                      }
-                    }}
-                    placeholder="Rechercher une capacité..."
-                    disabled={!selectedPokemon}
-                    className="flex-1"
-                  />
-                  <input
-                    type="hidden"
-                    {...register(`moves.${index}.nameFr` as const)}
-                  />
-                </>
-              )}
+          const otherMoves = allMoves
+            .filter((move) => !learnedMoves.some((lm) => lm.value === move.name))
+            .map((move) => ({
+              value: move.name,
+              label: move.nameFr,
+            }));
 
-              {watchedMoves[index]?.type === "random" && (
-                <>
-                  <Input
-                    value="Capacité aléatoire"
-                    disabled
-                    className="flex-1"
-                    {...register(`moves.${index}.name` as const, {
-                      value: "random",
-                    })}
-                  />
-                  <input
-                    type="hidden"
-                    {...register(`moves.${index}.nameFr` as const, {
-                      value: "Capacité aléatoire",
-                    })}
-                  />
-                </>
-              )}
+          const allMovesOptions = [
+            ...learnedMoves,
+            ...(learnedMoves.length > 0 && otherMoves.length > 0
+              ? [{ value: "__separator__", label: "Autres capacités", isSeparator: true }]
+              : []),
+            ...otherMoves,
+          ];
 
-              {watchedMoves[index]?.type === "custom" && (
-                <>
-                  <Combobox
-                    options={allMoves.map((move) => ({
-                      value: move.name,
-                      label: move.nameFr,
-                    }))}
-                    value={watchedMoves[index]?.name}
-                    onChange={(value) => {
-                      setValue(`moves.${index}.name`, value);
-                      const selectedMove = allMoves.find((m) => m.name === value);
-                      if (selectedMove) {
-                        setValue(`moves.${index}.nameFr`, selectedMove.nameFr);
-                      }
-                    }}
-                    placeholder="Rechercher une capacité..."
-                    className="flex-1"
-                  />
-                  <input
-                    type="hidden"
-                    {...register(`moves.${index}.nameFr` as const)}
-                  />
-                </>
+          return (
+            <div key={index} className="space-y-2">
+              <div className="flex gap-2">
+                <Select
+                  {...register(`moves.${index}.type` as const)}
+                  className="w-32"
+                >
+                  <option value="learned">Capacité</option>
+                  <option value="random">Aléatoire</option>
+                </Select>
+
+                {watchedMoves[index]?.type === "learned" && (
+                  <>
+                    <Combobox
+                      options={allMovesOptions}
+                      value={watchedMoves[index]?.name}
+                      onChange={(value) => {
+                        setValue(`moves.${index}.name`, value);
+                        const selectedMove = [...learnedMoves, ...otherMoves].find((m) => m.value === value);
+                        if (selectedMove) {
+                          setValue(`moves.${index}.nameFr`, selectedMove.label);
+                        }
+                      }}
+                      placeholder="Rechercher une capacité..."
+                      disabled={!selectedPokemon}
+                      className="flex-1"
+                    />
+                    <input
+                      type="hidden"
+                      {...register(`moves.${index}.nameFr` as const)}
+                    />
+                  </>
+                )}
+
+                {watchedMoves[index]?.type === "random" && (
+                  <>
+                    <Input
+                      value="Capacité aléatoire"
+                      disabled
+                      className="flex-1"
+                      {...register(`moves.${index}.name` as const, {
+                        value: "random",
+                      })}
+                    />
+                    <input
+                      type="hidden"
+                      {...register(`moves.${index}.nameFr` as const, {
+                        value: "Capacité aléatoire",
+                      })}
+                    />
+                  </>
+                )}
+              </div>
+              {errors.moves?.[index]?.name && (
+                <p className="text-sm text-red-600">
+                  {errors.moves[index]?.name?.message}
+                </p>
               )}
             </div>
-            {errors.moves?.[index]?.name && (
-              <p className="text-sm text-red-600">
-                {errors.moves[index]?.name?.message}
-              </p>
-            )}
-          </div>
-        ))}
+          );
+        })}
         {errors.moves && !Array.isArray(errors.moves) && (
           <p className="text-sm text-red-600">{errors.moves.message}</p>
         )}
