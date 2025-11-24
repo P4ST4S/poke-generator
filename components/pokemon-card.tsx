@@ -89,7 +89,6 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
               className="px-3 py-1 bg-gray-800 text-gray-800 rounded cursor-pointer hover:bg-gray-700 transition-colors select-none"
               title="Cliquer pour révéler"
             >
-              ████████
             </button>
           )}
         </div>

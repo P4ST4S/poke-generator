@@ -178,7 +178,7 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
 
       {/* Surnom */}
       <div className="space-y-2">
-        <Label htmlFor="nickname">Surnom</Label>
+        <Label htmlFor="nickname">Surnom (OBLIGATOIRE!!)</Label>
         <Input id="nickname" {...register("nickname")} placeholder="Entrez un surnom" />
         {errors.nickname && (
           <p className="text-sm text-red-600">{errors.nickname.message}</p>
@@ -249,6 +249,18 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
                 <Select
                   {...register(`moves.${index}.type` as const)}
                   className="w-32"
+                  disabled={!selectedPokemon}
+                  onChange={(e) => {
+                    const newType = e.target.value as "learned" | "random";
+                    setValue(`moves.${index}.type`, newType);
+
+                    // Si on passe en mode aléatoire, générer immédiatement une capacité
+                    if (newType === "random" && allMoves.length > 0) {
+                      const randomMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+                      setValue(`moves.${index}.name`, randomMove.name);
+                      setValue(`moves.${index}.nameFr`, randomMove.nameFr);
+                    }
+                  }}
                 >
                   <option value="learned">Capacité</option>
                   <option value="random">Aléatoire</option>
@@ -279,19 +291,34 @@ export function PokemonForm({ pokemonList }: PokemonFormProps) {
 
                 {watchedMoves[index]?.type === "random" && (
                   <>
-                    <Input
-                      value="Capacité aléatoire"
-                      disabled
-                      className="flex-1"
-                      {...register(`moves.${index}.name` as const, {
-                        value: "random",
-                      })}
+                    <div className="flex-1 flex gap-2">
+                      <Input
+                        value={watchedMoves[index]?.nameFr || "Capacité aléatoire"}
+                        readOnly
+                        className="flex-1 bg-white text-gray-900 cursor-default"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          if (allMoves.length === 0) return;
+                          const randomMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+                          setValue(`moves.${index}.name`, randomMove.name);
+                          setValue(`moves.${index}.nameFr`, randomMove.nameFr);
+                        }}
+                        className="px-3"
+                        title="Générer une capacité aléatoire"
+                      >
+                        🎲
+                      </Button>
+                    </div>
+                    <input
+                      type="hidden"
+                      {...register(`moves.${index}.name` as const)}
                     />
                     <input
                       type="hidden"
-                      {...register(`moves.${index}.nameFr` as const, {
-                        value: "Capacité aléatoire",
-                      })}
+                      {...register(`moves.${index}.nameFr` as const)}
                     />
                   </>
                 )}

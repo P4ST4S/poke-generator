@@ -48,19 +48,28 @@ export function Combobox({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Normaliser une chaîne pour la recherche (enlever les accents et mettre en minuscules)
+  const normalizeString = (str: string) => {
+    return str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  };
+
   // Filtrer les options en fonction de la recherche (garder les séparateurs si au moins une option avant ou après est visible)
+  const normalizedSearch = normalizeString(search);
   const filteredOptions = options.filter((option, idx, arr) => {
     if (option.isSeparator) {
       // Garder le séparateur si au moins une option avant ou après correspond à la recherche
       const hasMatchBefore = arr.slice(0, idx).some((opt) =>
-        !opt.isSeparator && opt.label.toLowerCase().includes(search.toLowerCase())
+        !opt.isSeparator && normalizeString(opt.label).includes(normalizedSearch)
       );
       const hasMatchAfter = arr.slice(idx + 1).some((opt) =>
-        !opt.isSeparator && opt.label.toLowerCase().includes(search.toLowerCase())
+        !opt.isSeparator && normalizeString(opt.label).includes(normalizedSearch)
       );
       return hasMatchBefore && hasMatchAfter;
     }
-    return option.label.toLowerCase().includes(search.toLowerCase());
+    return normalizeString(option.label).includes(normalizedSearch);
   });
 
   // Trouver le label de la valeur sélectionnée
