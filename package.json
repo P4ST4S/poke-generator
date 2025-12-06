@@ -17,10 +17,10 @@
     "@neondatabase/serverless": "^1.0.2",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.7",
-    "next": "16.0.3",
+    "next": "16.0.7",
     "pokedex-promise-v2": "2.3.0",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
     "react-hook-form": "^7.66.1",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.1.13"
@@ -33,7 +33,7 @@
     "dotenv": "^17.2.3",
     "drizzle-kit": "^0.31.7",
     "eslint": "^9",
-    "eslint-config-next": "16.0.3",
+    "eslint-config-next": "16.0.7",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
